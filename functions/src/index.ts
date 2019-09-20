@@ -16,9 +16,12 @@ const app = new App({
 // Global error handler
 app.error(console.error);
 
-app.event("app_mention", async ({ event }) => {
+app.event("app_mention", async ({ event, say }) => {
   console.log(
-    event,
+    `Received a message event: user ${event.user} in channel ${event.channel} says ${event.text}`
+  );
+
+  say(
     `Received a message event: user ${event.user} in channel ${event.channel} says ${event.text}`
   );
 });
