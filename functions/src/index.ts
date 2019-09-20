@@ -1,30 +1,34 @@
 import * as functions from "firebase-functions";
-const express = require("express");
-const cors = require("cors");
-const { createEventAdapter } = require("@slack/events-api");
+import { App, ExpressReceiver } from "@slack/bolt";
 
-const slackSigningSecret = functions.config().slack.signingsecret;
-const slackEvents = createEventAdapter(slackSigningSecret);
+const config = functions.config();
 
-interface Event {
-  user: string;
-  channel: string;
-  text: string;
-}
+const expressReceiver = new ExpressReceiver({
+  signingSecret: config.slack.signing_secret,
+  endpoints: "/events"
+});
 
-slackEvents.on("message", (event: Event) => {
+const app = new App({
+  receiver: expressReceiver,
+  token: config.slack.bot_token
+});
+
+// Global error handler
+app.error(console.error);
+
+app.event("app_mention", async ({ event }) => {
   console.log(
+    event,
     `Received a message event: user ${event.user} in channel ${event.channel} says ${event.text}`
   );
 });
 
-const app = express();
+// Handle `/echo` command invocations
+// app.command("/echo-from-firebase", async ({ command, ack, say }) => {
+// Acknowledge command request
+//   ack();
+//   say(`You said "${command.text}"`);
+// });
 
-// Automatically allow cross-origin requests
-app.use(cors({ origin: true }));
-
-// Add middleware to listen for slack messages
-app.use("/", slackEvents.requestListener());
-
-// Expose Express API as a single Cloud Function:
-exports.slackEvents = functions.https.onRequest(app);
+// https://{your domain}.cloudfunctions.net/slack/events
+exports.slack = functions.https.onRequest(expressReceiver.app);
