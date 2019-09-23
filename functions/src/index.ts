@@ -21,9 +21,32 @@ app.event("app_mention", async ({ event, say }) => {
     `Received a message event: user ${event.user} in channel ${event.channel} says ${event.text}`
   );
 
-  say(
-    `Received a message event: user ${event.user} in channel ${event.channel} says ${event.text}`
-  );
+  say({
+    text: ``,
+    blocks: [
+      {
+        type: "section",
+        text: {
+          type: "mrkdwn",
+          text: `Thanks for the message <@${event.user}> :wave:\n\nI can't get to the phone right now :)\n\n\n*Shall I forward myself your message as a DM on Twitter?*`
+        }
+      },
+      {
+        type: "actions",
+        elements: [
+          {
+            type: "button",
+            text: {
+              type: "plain_text",
+              text: "Yes, send as DM"
+            },
+            style: "primary",
+            value: "click_me_123"
+          }
+        ]
+      }
+    ]
+  });
 });
 
 // Handle `/echo` command invocations
