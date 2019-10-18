@@ -19,6 +19,11 @@ const slackApp = new App({
 
 const POST_TO_CHANNEL_FORM_URL =
   "https://us-central1-petebot3000.cloudfunctions.net/postToChannel/";
+const CHANNEL_APMM_DEV = "C8CGYPPCK";
+const CHANNEL_SOUTH_VIDEOGAMES = "CGR7WSMMW";
+const CHANNEL_ROBOT_WARS = "CAFMCM023";
+const CHANNEL_FANTASY_FOOTBALL = "CLPULPL3Y";
+const CHANNEL_TESTING = "CNF6W7L31";
 
 const twitter = createTwitterClient(config);
 
@@ -181,3 +186,23 @@ postToChannelApp.post("/:data", (req, res) => {
 exports.slack = functions.https.onRequest(expressReceiver.app);
 // https://us-central1-petebot3000.cloudfunctions.net/postToChannel/
 exports.postToChannel = functions.https.onRequest(postToChannelApp);
+
+exports.test = functions.pubsub.schedule("every 5 minutes").onRun(context => {
+  const channel = CHANNEL_TESTING;
+
+  console.log("This will be run every 5 minutes!");
+  slackApp.client.chat
+    .postMessage({
+      token: config.slack.bot_token,
+      channel: channel,
+      text: "test message, pls ignore"
+    })
+    .then(() => {
+      console.log("posted message to channel", channel);
+    })
+    .catch(err => {
+      console.error(err);
+    });
+});
+
+// 1st mon,wednesday,thu of sep,oct,nov 17:00
