@@ -130,11 +130,7 @@ postToChannelApp.get("/:data", (req, res) => {
           },
           body: JSON.stringify({ reply: form.querySelector("[name=reply]").value })
         }).then(function(res) {
-          if (res.ok) {
-            alert('form submitted')
-          } else {
-            throw new Error(res)
-          }
+          alert('form submitted')
         }).catch(function(err) {
           console.error(err)
           alert('Error')
@@ -163,7 +159,7 @@ postToChannelApp.post("/:data", (req, res) => {
         .postMessage({
           token: config.slack.bot_token,
           channel: channel,
-          text: reply
+          text: `_from me_: ${reply}`
         })
         .then(() => {
           console.log("posted message to channel", channel);
